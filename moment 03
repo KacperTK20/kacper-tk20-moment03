@@ -1,0 +1,138 @@
+# Kacper Strzelecki, TK20
+# Moment03, uppgiften E
+
+#värdena i sluttabellen kan skilja sig åt de som finns på kursrolle, då avrunding sker (kan vara så att sker inte i samma moment som det skedde på kursrolle)
+
+#skatter
+kommun = 0.2136
+land = 0.1148
+varnskatt = 0.05
+statlig = 0.2
+#brytpunkter
+brytpunkt1 = 19247
+brytpunkt2 = 468700
+brytpunkt3 = 675700
+#listor
+inkomster = [1500, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000, 60000]
+a_inkomster = []
+netto_inkomster = []
+kommunal_skatt = []
+land_skatt = []
+statlig_skatt = []
+total_skatt = []
+andelen_skatt = []
+
+#funktionen för varje element i listan
+for i in inkomster:
+    #beräkna årsinkomst och "sätta in" värde på listan
+    arsinkomst = i * 12
+    a_inkomster.append(arsinkomst)
+    #funktionen för arsinkomsten under den första brytpunkten
+    if arsinkomst <= brytpunkt1:
+        #sätta in konstanta värderna för skatter -> 0
+        KS = 0
+        #sätta in värden på listor
+        kommunal_skatt.append(KS)
+        LS = 0
+        land_skatt.append(LS)
+        SS = 0
+        statlig_skatt.append(SS)
+        TS = 0
+        total_skatt.append(TS)
+        #oavsett inkomst, skatten är 0, då andelen är också 0
+        andelen = 0
+        andelen_skatt.append(andelen)
+        #eftersom skatten är 0, netto är lika med brutto
+        netto = i
+        netto_inkomster.append(netto)
+    
+    #funktionen för årsinkomsten under den andra brytpunkten och över den första brytpunkten
+    elif arsinkomst <= brytpunkt2 and arsinkomst > brytpunkt1:
+        #subtraherar den skattefria inkomsten, och dividerar det med 12 (månader), då ges det basen för beräkningar
+        skatte_bas = (arsinkomst - brytpunkt1)/12
+        #beräkna och avrunda både kommunalskatt och landstingskatt
+        KS = kommun * skatte_bas
+        KS = round(KS)
+        kommunal_skatt.append(KS)
+        LS = land * skatte_bas
+        LS = round(LS)
+        land_skatt.append(LS)
+        #statlig skatt är 0, sätter in detta värdet på listan
+        SS = 0
+        statlig_skatt.append(SS)
+        #beräkna den totala skatten
+        TS = KS + LS + SS
+        total_skatt.append(TS)
+        #beräkna skattebelastningen och multiplicera det med 100, för att få värde i % (% adderas vi i utprint)
+        andelen = (TS/i) * 100
+        andelen = round(andelen, 2)
+        andelen_skatt.append(andelen)
+        #brutto - skatt
+        netto = i - TS
+        netto_inkomster.append(netto)
+    
+    #funktionen för årsinkomster över brytpunkten 2 och under brytpunkten 3 - statlig skatt
+    elif arsinkomst > brytpunkt2 and arsinkomst <= brytpunkt3:
+        #subtraherar den skattefria inkomsten, och dividerar det med 12 (månader), då ges det basen för beräkningar
+        skatte_bas = (arsinkomst - brytpunkt1)/12
+        #beränkar den basen över brytpunkten 2 (basen för statlig skatt 20%) och dividerar det med 12 (månader)
+        statlig_bas = (arsinkomst - brytpunkt2)/12
+        #beräkna skatter
+        KS = kommun * skatte_bas
+        KS = round(KS)
+        kommunal_skatt.append(KS)
+        LS = land * skatte_bas
+        LS = round(LS)
+        land_skatt.append(LS)
+        SS = statlig_bas * statlig
+        SS = round(SS)
+        statlig_skatt.append(SS)
+        TS = KS + LS + SS
+        total_skatt.append(TS)
+        andelen = (TS/i) * 100
+        andelen = round(andelen, 2)
+        andelen_skatt.append(andelen)
+        netto = i - TS
+        netto_inkomster.append(netto)
+    
+    #funktionen för årsinkomster över brytpunkt 3 (värnskatt)
+    elif arsinkomst > brytpunkt3:
+        #beräkna baser för varje skatt
+        skatte_bas = (arsinkomst - brytpunkt1)/12
+        statlig_bas = (arsinkomst - brytpunkt2)/12
+        varn_bas = (arsinkomst - brytpunkt3)/12
+        #beräkna skatter
+        KS = kommun * skatte_bas
+        KS = round(KS)
+        kommunal_skatt.append(KS)
+        LS = land * skatte_bas
+        LS = round(LS)
+        land_skatt.append(LS)
+        SS = statlig_bas * statlig
+        SS = round(SS)
+        VS = varnskatt * varn_bas
+        VS = round(VS)
+        SS += VS
+        statlig_skatt.append(SS)
+        TS = KS + LS + SS
+        total_skatt.append(TS)
+        andelen = (TS/i)* 100
+        andelen = round(andelen, 2)
+        andelen_skatt.append(andelen)
+        netto = i - TS
+        netto_inkomster.append(netto)
+
+#printa tabellen
+
+#printa första raden
+print("""
+Årsinkomst:      | Månadsinkomst:   | Total skatt:   | Netto/mån:     | Kommunals.:   | Lands.:        | Statligs.:     | Skatt i %:    | 
+-----------------------------------------------------------------------------------------------------------------------------------------""")
+
+#ta in hur många element finns det i listan
+length = len(inkomster)
+#funktionen för varje element i listan
+#printa in alla värden för element i en rad
+for i in range(0, length):
+    print("""{0:14}kr | {1:14}kr | {2:12}kr | {3:12}kr | {4:11}kr | {5:12}kr | {6:12}kr | {7:12.2f}% |
+""".format(a_inkomster[i], inkomster[i], total_skatt[i], netto_inkomster[i], kommunal_skatt[i], land_skatt[i], statlig_skatt[i], andelen_skatt[i] ))
